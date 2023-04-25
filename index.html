@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <title>Basic app</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navBar">
+        <h1>Test app</h1>
+    </nav>
+    <div class="container mt-5">
+        <div class="row gy-4">
+            <div class="col col-12">
+                <div class="dataRowSection container">
+                    <div class="row gx-4">
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                This is some text within a card body.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                This is some text within a card body.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                This is some text within a card body.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-12">
+                <div class="dataMidSection container">
+                    <div class="row gx-4">
+                        <div class="user-profile-section col pb-4">
+                            <div class="card">
+                                <div class="card-body container">
+                                    
+                                    <div class="row justify-content-center text-center">
+                                        <div class="user-prof-bg-section">
+                                            <img src="user-prof-bg.png" alt="User profile background" />
+                                        </div>
+                                        <div class=" user-prof-data-section container">
+                                            <div class="row gy-2">
+                                                <img class="col col-12 mx-auto user-prof-img mb-4" src="./user-icon.png"/>
+                                                <div class="col col-12 mb-4">
+                                                    <p class="user-name"></p> 
+                                                    <p class="user-email"></p> 
+                                                </div>
+                                                <div class="col col-12 container">
+                                                    <button type="button" class="btn btn-primary">Connect</button>
+                                                    <button type="button" class="btn btn-secondary">Message</button>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="instruments-table-group col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="container">
+                                        <div class="title-searchbox-section row">
+                                            <div class="col col-5">
+                                                <p>Instruments table</p>                                                
+                                            </div>
+                                            <div class="col col-7">                                                    
+                                                <div class="input-group mb-3">
+                                                    <span class="input-group-text" id="basic-addon1"><img width="20px" height="20px" src="./searchIcon-2.png" alt="searchIcon"/></span>
+                                                    <input id="searchBox" type="text" class="form-control" placeholder="Search" aria-label="Search">
+                                                </div>                                           
+                                            </div>
+                                        </div>
+                                        <div class="insturments-table-data-group row">
+                                            <table class="table" id="instruments-table-main-table">
+                                                <thead>
+                                                  <tr>
+                                                    <th scope="col">ID</th>
+                                                    <th scope="col">title</th>
+                                                    <th scope="col">body</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody id="instruments-table-body">
+                                                  
+                                                </tbody>
+                                              </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                This is some text within a card body.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <script>
+        //initial fetch
+        fetchLatestData();
+        fetchUser();
+
+        //This is the script to fetch latest instruments every 5 seconds
+        setInterval(()=>{fetchLatestData();},5000);
+
+        //Set the variable for the table body
+        const dataTableBody = document.querySelector("#instruments-table-body");
+
+        //function to fetch the latest data
+        function fetchLatestData(){
+            
+            fetch("https://jsonplaceholder.typicode.com/posts")
+            .then(response => response.json())
+            .then(data => {
+            // Loop through data and add to table
+                renderTable(data);
+                console.log("Updated data");
+                console.log(Date.now);
+
+            })
+            .catch(err=>{console.log(err);})
+            
+        }
+
+        //function to render the data with filtered data if there is something in the searchBox
+        function renderTable(data){
+            //this clears out whatever is currently in the dataTableBody
+            dataTableBody.innerHTML='';
+
+            // Get search query from input field
+            const searchInput = document.querySelector('#searchBox');
+            const searchText = searchInput.value.trim().toLowerCase();
+
+             // Filter data based on search query
+            const filteredData = data.filter(post =>
+            post.title.toLowerCase().includes(searchText)
+            );
+
+            filteredData.forEach(post => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${post.id}</td>
+                <td>${post.title}</td>
+                <td>${post.body}</td>
+                `;
+                dataTableBody.appendChild(row);
+            });
+        }
+
+        const searchIpt=document.querySelector("#searchBox");
+        searchIpt.addEventListener('input',()=>{
+            fetchLatestData();
+        })
+
+        //This is to fetch User's data and display it
+        function fetchUser(){
+            const userName = document.querySelector('.user-name');
+            const userEmail = document.querySelector('.user-email');
+            const userProfImg = document.querySelector('.user-prof-img');
+            
+            fetch('https://reqres.in/api/users/2')
+                .then(response => response.json())
+                .then(data => {
+                    const user = data.data;
+                    userName.textContent = `${user.first_name} ${user.last_name}`;
+                    userEmail.textContent = user.email;
+                    userProfImg.src = user.avatar;
+                })
+                .catch(error => console.error(error));
+            }
+        
+    </script>
+</body>
+</html>
